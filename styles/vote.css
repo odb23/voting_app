@@ -1,0 +1,16 @@
+.statistics {
+    margin: 1rem 0;
+}
+
+.statistics h4 {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+.statistics ul {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+

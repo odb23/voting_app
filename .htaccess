@@ -1,0 +1,5 @@
+RewriteEngine On
+RewriteBase /voting-app/
+
+
+RewriteRule ^vote/(\d{4})/(.*?)\.php$ vote.php?year=$1&department=$2 [L,QSA]

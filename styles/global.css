@@ -1,0 +1,124 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+}
+
+body{
+  background-image: url(../images/main-bg.jpg);
+}
+
+header {
+  background: rgb(223, 223, 223);
+  color: white;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: end;
+  font-size: 1.05rem;
+  font-weight: 500;
+  gap:2px;
+}
+
+main {
+  position: relative;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  max-width: 720px;
+  padding: 1rem;
+  padding-top: 5rem;
+  margin: auto;
+  margin-top: 30px;
+  margin-bottom: 30px;
+  width: 100%;
+  font-size: 1rem;
+  border: 1px solid gray;
+  border-radius: 12px;
+  height: 100%;
+  min-height: calc(100vh - 60px);
+  overflow: hidden;
+}
+
+.italic {
+  font-style: italic;
+  color: gray;
+}
+
+.header {
+  margin-bottom: 1rem;
+  font-size: 1.35rem;
+  font-weight: bold;
+}
+
+form label,
+form input,
+form select {
+  width: 100%;
+}
+
+
+
+form input,
+form select {
+  margin-top: 4px;
+  padding: 0.75rem;
+  border-radius: 8px;
+}
+
+.error {
+  color: red;
+  font-style: italic;
+}
+
+a {
+  margin-top: 1rem;
+  text-align: center;
+  color: black;
+}
+
+fieldset {
+  padding: 0.85rem;
+  padding-top: 1.85rem;
+  padding-bottom: 1.85rem;
+  margin-top: 1.5rem;
+}
+
+fieldset label {
+  margin-right: 0.5rem;
+}
+
+fieldset legend {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+input[type="submit"], .link-button {
+  padding: 0.75rem;
+  font-size: 1.05rem;
+  font-weight: bold;
+  background: black;
+  border-radius: 8px;
+  color: white;
+  border: none;
+  outline: none;
+  margin-top: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+input[type="submit"]:disabled {
+  cursor: not-allowed;
+}
