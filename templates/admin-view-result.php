@@ -1,16 +1,12 @@
 <?php
-
-$server_req_method = $_SERVER["REQUEST_METHOD"];
-
-if ($server_req_method == "POST") {
-    echo "<script>alert('here')</script>";
+if ( $_SERVER["REQUEST_METHOD"] == "POST") {
     $fn = isset($_POST['form-name']) ? $_POST['form-name'] : "";
 
     if ($fn == "admin-view-result") {
         $department = $_POST['department'];
         $currentYear = date('Y');
 
-        header("Location: results.php?year=$currentYear&department=$department", true);
+        header("Location: results.php?department=$department", true);
         exit();
     }
 }
@@ -22,23 +18,27 @@ if ($server_req_method == "POST") {
         <select id="department" name="department" required value="<?php echo isset($_SESSION['form_data']['department']) ? $_SESSION['form_data']['department'] : ''; ?>">
             <option value="">Select Department</option>
             <?php
-            include './scripts/dbconn.php';
+            include './lib/dbconn.php';
 
             $sql = 'SELECT * from department';
-            $result = $conn->query($sql);
+            $result = $db->query($sql);
 
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    if ($row["name"] == "ADMIN") {
+                    if ($row["NAME"] == "ADMIN") {
                         continue;
                     }
-                    echo "<option value='" . $row["name"] . "'>" . $row["name"] . "</option>";
+                    echo "<option value='" . $row["NAME"] . "'>" . $row["NAME"] . "</option>";
                 }
             }
 
-            $conn->close();
+            $db->close();
             ?>
         </select>
     </div>
     <input class="w-fit" type="submit" value="View Results">
 </form>
+<br><br>
+<hr> <br> <br>
+
+<a class='link-button' href='./admin.php'>Go to Admin Panel</a>

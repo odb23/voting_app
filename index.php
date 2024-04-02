@@ -17,11 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         exit();
     }
     
-    $currentYear =  date('Y');
-    $dept = isset($_SESSION['department']) ? $_SESSION['department'] : "";
-    $admin = isset($_SESSION['admin']) ? $_SESSION['admin'] : false;
-    $route = !$admin ? "Location: vote.php?year=$currentYear&department=$dept" : "Location: vote.php";
-    header($route);
+    header("Location: vote.php");
     exit();
 }
 

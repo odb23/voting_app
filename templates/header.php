@@ -1,6 +1,4 @@
 <?php
-$logout_form_name = "logout-form";
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $form_name = isset($_POST['form-name']) ? $_POST['form-name'] : "";
 
@@ -10,11 +8,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: login.php");
         exit();
     }
+    $_POST = array();
 }
 ?>
 
 <header>
-    <a class="logo" style="margin-top: 0;"><svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30px" height="30px" viewBox="0 0 45.973 45.972">
+    <a href="./index.php" class="logo" style="margin-top: 0;"><svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="30px" height="30px" viewBox="0 0 45.973 45.972">
             <g>
                 <g>
                     <path d="M44.752,20.914L25.935,2.094c-0.781-0.781-1.842-1.22-2.946-1.22c-1.105,0-2.166,0.439-2.947,1.22L1.221,20.914

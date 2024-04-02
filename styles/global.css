@@ -29,6 +29,7 @@ header {
   align-items: end;
   font-size: 1.05rem;
   font-weight: 500;
+  text-decoration-line: none;
   gap:2px;
 }
 
@@ -91,8 +92,8 @@ a {
 
 fieldset {
   padding: 0.85rem;
-  padding-top: 1.85rem;
-  padding-bottom: 1.85rem;
+  padding-top: 1.2rem;
+  padding-bottom: 1.2rem;
   margin-top: 1.5rem;
 }
 
@@ -121,4 +122,15 @@ input[type="submit"], .link-button {
 
 input[type="submit"]:disabled {
   cursor: not-allowed;
+}
+
+.radio-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.radio-container input {
+  width: fit-content !important;
 }

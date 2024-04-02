@@ -10,75 +10,67 @@
 </head>
 <?php
 session_start();
-include './scripts/dbconn.php';
+include './lib/dbconn.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = htmlspecialchars($_POST["matric-no"]);
+    $username = htmlspecialchars($_POST["username"]);
     $password = htmlspecialchars($_POST["password"]);
 
     $errors = [];
 
-    $stmt = $conn->prepare("SELECT * FROM student WHERE username = ?");
-    $stmt->bind_param("s", $username);
+    $stmt = $db->prepare("SELECT * FROM users WHERE username = ? and `password`  = ?");
+    $uppercase_username = strtoupper($username);
+    $stmt->bind_param("ss", $uppercase_username, $password);
     $stmt->execute();
     $user = $stmt->get_result();
 
     if ($user->num_rows < 1) {
         $errors[] = "Invalid credentials. Try again!";
     } else {
-        $sql = $conn->prepare("select * from auth where id = ?");
-        $sql->bind_param("s", $username);
-        $sql->execute();
-        $result = $sql->get_result();
+        $row = $user->fetch_assoc();
 
-        if ($result->num_rows < 1) {
+        if ($row["USERNAME"] !== $uppercase_username || $row["PASSWORD"] !== $password) {
             $errors[] = "Invalid credentials. Try again!";
         } else {
-            $row = $result->fetch_assoc();
-            if ($row["id"] !== $username || $row["pswd"] !== $password) {
-                $errors[] = "Invalid credentials. Try again!";
-            } else {
-                $user_row = $user->fetch_assoc();
-                $sql = $conn->prepare("select * from admin where username = ?");
-                $sql->bind_param("s", $username);
-                $sql->execute();
-                $result = $sql->get_result();
+            $sql = $db->prepare("SELECT * from `ADMIN` where username = ?");
+            $sql->bind_param("s", $uppercase_username);
+            $sql->execute();
+            $res = $sql->get_result();
 
-                if ($result->num_rows > 0) {
-                    $_SESSION['admin'] = true;
-                }
-                $_SESSION['user_id'] = $user_row['username'];
-                $_SESSION['user_name'] = $user_row['lname'] . " " . $user_row['fname'];
-                $_SESSION['department'] = $user_row['department'];
+            $_SESSION['admin'] = $res->num_rows > 0 ? true : false;
+            $_SESSION['user_id'] = $row['USERNAME'];
+            $_SESSION['user_name'] = $row['LNAME'] . " " . $row['FNAME'];
+            $_SESSION['department'] = $row['DEPARTMENT_NAME'];
 
-                header("Location: index.php");
-                exit();
-            }
+
+            header("Location: index.php");
+            exit();
         }
     }
 
+    $_POST = array();
     // Store form data in session
     $_SESSION['form_data'] = array(
-        'matric-no' => $username,
+        'username' => $username,
         'password' => $password
     );
-} else if ($_SERVER["REQUEST_METHOD"] == "GET")  {
+} else if ($_SERVER["REQUEST_METHOD"] == "GET") {
     if (isset($_SESSION['user_id'])) {
         header("Location: index.php");
         exit();
     }
 }
 
-$conn->close();
+$db->close();
 ?>
 
 <body>
     <main>
-        <!--  Registration Form -->
+        <!--  Login Form -->
         <h1>Sign In</h1>
         <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
-            <div><label for="matric-no">Username (Matric Number):</label>
-                <input type="text" id="matric-no" name="matric-no" required minlength="5" maxlength="10" value="<?php echo isset($_SESSION['form_data']['matric-no']) ? $_SESSION['form_data']['matric-no'] : ''; ?>">
+            <div><label for="username">Username (Matric Number):</label>
+                <input type="text" id="username" name="username" required minlength="5" maxlength="10" value="<?php echo isset($_SESSION['form_data']['username']) ? $_SESSION['form_data']['username'] : ''; ?>">
             </div>
 
             <div><label for="password">Password:</label>

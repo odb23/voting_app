@@ -1,6 +1,6 @@
 <?php
-$req_year = isset($_GET['year']) ? $_GET['year'] : "";
-$req_dept = isset($_GET['department']) ? $_GET['department'] : "";
+$req_year = date('Y');
+$req_department = isset($_GET['department']) ? $_GET['department'] : "";
 
 
 $name = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : "";
@@ -11,36 +11,42 @@ $admin = isset($_SESSION['admin']) ? $_SESSION['admin'] : false;
 
 
     <?php
-    include './scripts/dbconn.php';
+    include './lib/dbconn.php';
 
-    if (!$admin) {
-        $sql = 'SELECT * from executive_position';
-        $result = $conn->query($sql);
+    $allow_user = $admin || $req_department === $user_department;
+    if ($admin) {
+        $user_department = $req_department;
+    }
+
+    if ($allow_user) {
+        $sql = "SELECT * FROM `POSITION`";
+        $result = $db->query($sql);
 
         if ($result->num_rows > 0) {
+            
             while ($row = $result->fetch_assoc()) {
-                $pos = $row['title'];
+                $pos = $row['TITLE'];
                 echo "<fieldset><legend>" . ucwords(strtolower($pos)) . "</legend>";
 
-                $sql = $conn->prepare("select username, lname, fname  from electorates e  join student s on s.username = e.id where s.department = ? and year = ? and e.executive_position = ?");
-                $sql->bind_param("sss", $req_dept, $req_year, $pos);
+                $sql = $db->prepare("select c.username, lname, fname  from candidates c join users u on c.username = u.username where u.department_name = ? and c.year = ? and c.position_title = ?");
+                $sql->bind_param("sss", $user_department, $req_year, $pos);
                 $sql->execute();
                 $candidiate_results = $sql->get_result();
 
-                if ($result->num_rows > 0) {
+                if ($candidiate_results->num_rows > 0) {
 
                     $total_count = 0;
                     while ($candidate = $candidiate_results->fetch_assoc()) {
 
-                        $sql2 =  $conn->prepare("SELECT COUNT(*) AS count FROM student s INNER JOIN student_votes v ON s.username = v.student_id WHERE v.vote_year = ? AND s.department = ? GROUP BY s.username AND v.candidate_id = ?");
+                        $sql2 =  $db->prepare("SELECT COUNT(*) AS count FROM votes  WHERE vote_year = ? AND candidate_id = ? ");
 
-                        $sql2->bind_param("sss", $req_year, $req_dept, $candidate['username']);
+                        $sql2->bind_param("ss", $req_year, $candidate['username']);
                         $sql2->execute();
-                        $result = $sql->get_result();
+                        $_result = $sql2->get_result();
 
                         $count = 0;
-                        if ($result->num_rows > 0) {
-                            $count =  $result->fetch_assoc()["count"];
+                        if ($_result->num_rows > 0) {
+                            $count =  $_result->fetch_assoc()["count"];
                             $total_count += $count;
                         }
 
@@ -55,7 +61,6 @@ $admin = isset($_SESSION['admin']) ? $_SESSION['admin'] : false;
             }
         }
     }
-    $conn->close();
-    $redirect_route = $admin ? "admin.php" : "vote.php";
-    echo "<a class='link-button' href='$redirect_route'>Go to Homepage</a>";
+    $db->close();
+    echo "<a class='link-button' href='./index.php'>Go to Homepage</a>";
 ?>
