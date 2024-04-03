@@ -11,6 +11,37 @@
     list-style: none;
     margin-left: 0;
     padding-left: 0;
+    display: flex;
+    justify-content: space-between;
+    column-gap: 2.5rem;
 }
 
+
+.statistics ul li {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+    padding: 1rem;
+}
+
+.statistics ul li p {
+    color: gray;
+}
+
+.statistics ul li p:first-child {
+    font-size: 2rem;
+    font-weight: bold;
+    color: black;
+}
+
+.flex {
+    display: flex;
+}
+
+.justify-center {
+    justify-items: center;
+}
 

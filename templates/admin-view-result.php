@@ -12,10 +12,10 @@ if ( $_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-    <input type="hidden" name="form-name" value="admin-view-result">
-    <div><label for="department">Select Department:</label>
-        <select id="department" name="department" required value="<?php echo isset($_SESSION['form_data']['department']) ? $_SESSION['form_data']['department'] : ''; ?>">
+<form action="results.php" method="get">
+    <br>
+    <div><label for="department"> Department:</label>
+        <div><select id="department" class="w-fit" name="department" required value="<?php echo isset($_SESSION['form_data']['department']) ? $_SESSION['form_data']['department'] : ''; ?>"></div>
             <option value="">Select Department</option>
             <?php
             include './lib/dbconn.php';
@@ -40,5 +40,7 @@ if ( $_SERVER["REQUEST_METHOD"] == "POST") {
 </form>
 <br><br>
 <hr> <br> <br>
+<div class="flex justify-center" style="width: 100%; ">
+<a class='link-button w-fit' style="margin: auto;" href='./admin.php'>Go to Admin Panel</a>
+</div>
 
-<a class='link-button' href='./admin.php'>Go to Admin Panel</a>

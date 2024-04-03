@@ -128,13 +128,29 @@ function removeCandidate(string $username, int $year, array &$errors)
     $result = $sql->get_result();
 
     if ($result->num_rows < 1) {
-        $errors[] = "No user record found.";
+        $errors[] = "No candidacy record found for user.";
         return false;
     }
 
-    $sql = $db->prepare("DELETE FROM CANDIDATES WHERE  USERNAME = ? AND  `YEAR` = ?");
-    $sql->bind_param("ss", $username, $year);
-    $val = $sql->execute();
+    $db->autocommit(false);
+
+    $remove_votes = $db->prepare("DELETE FROM VOTES WHERE CANDIDATE_ID = ? AND VOTE_YEAR = ?");
+    $remove_votes->bind_param("ss", $username, $year);
+
+    if ($remove_votes->execute()) {
+        $sql = $db->prepare("DELETE FROM CANDIDATES WHERE  USERNAME = ? AND  `YEAR` = ?");
+        $sql->bind_param("ss", $username, $year);
+        $val = $sql->execute();
+        if ($val) {
+            $db->commit();
+        } else {
+            $db->rollback();
+            $errors[] = $db->error;
+        }
+    } else {
+        $db->rollback();
+        $errors[] = $db->error;
+    }
 
     $db->close();
     return $val;
@@ -188,6 +204,68 @@ function removeDepartment(string $department, array &$errors): bool
 
     $sql = $db->prepare("DELETE FROM department WHERE department = ?");
     $sql->bind_param("s", $department);
+    $val = $sql->execute();
+
+    $db->close();
+    return $val;
+}
+
+function disqualifyCandidate(string $username, int $year, array &$errors): bool
+{
+
+    if (!isset($username) || empty($username)) {
+        $errors[] = "Username cannot be empty";
+        return false;
+    }
+    if (!isset($year)) {
+        $errors[] = "Year cannot be empty";
+        return false;
+    }
+    include "./lib/dbconn.php";
+
+    $sql = $db->prepare("SELECT * from candidates where username = ? and year = ?");
+    $sql->bind_param("ss", $username, $year);
+    $sql->execute();
+    $result = $sql->get_result();
+
+    if ($result->num_rows < 1) {
+        $errors[] = "No candidacy record found for user.";
+        return false;
+    }
+
+    $sql = $db->prepare("UPDATE CANDIDATES SET DISQUALIFIED = TRUE WHERE  USERNAME = ? AND  `YEAR` = ?");
+    $sql->bind_param("ss", $username, $year);
+    $val = $sql->execute();
+
+    $db->close();
+    return $val;
+}
+
+function removeDisqualificationFromCandidate(string $username, int $year, array &$errors): bool
+{
+
+    if (!isset($username) || empty($username)) {
+        $errors[] = "Username cannot be empty";
+        return false;
+    }
+    if (!isset($year)) {
+        $errors[] = "Year cannot be empty";
+        return false;
+    }
+    include "./lib/dbconn.php";
+
+    $sql = $db->prepare("SELECT * from candidates where username = ? and year = ?");
+    $sql->bind_param("ss", $username, $year);
+    $sql->execute();
+    $result = $sql->get_result();
+
+    if ($result->num_rows < 1) {
+        $errors[] = "No candidacy record found for user.";
+        return false;
+    }
+
+    $sql = $db->prepare("UPDATE CANDIDATES SET DISQUALIFIED = FALSE WHERE  USERNAME = ? AND  `YEAR` = ?");
+    $sql->bind_param("ss", $username, $year);
     $val = $sql->execute();
 
     $db->close();

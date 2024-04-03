@@ -37,12 +37,8 @@ if ($server_req_method == "GET") {
 <body>
     <main>
         <?php include "./templates/header.php" ?>
-        <h3 class="header">Welcome, <?php
-            echo ucwords(strtolower($name));
-            ?>
-        </h3>
-
-        <h4> <?php echo $req_year . " Department of " . $req_dept ?> Election Results </h4>
+        <br>
+        <h3 class="header"> <?php echo $req_year . " Department of " . $req_dept ?> Election Results </h3>
         <?php
             include "./templates/user-results.php";
        

@@ -31,11 +31,6 @@ if ($_SERVER["REQUEST_METHOD"]  == "GET") {
     <main>
         <?php include "./templates/header.php" ?>
 
-        <h3 class="header">Welcome, <?php
-                                    echo ucwords(strtolower($name));
-                                    ?>
-        </h3>
-
         <?php
 
         if ($admin) {

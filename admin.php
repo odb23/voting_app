@@ -61,9 +61,22 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         case "remove-candidate":
             $remove_cand_errors = [];
             $username = isset($_POST["username"]) ? strtoupper($_POST["username"]) : "";
+            $type = isset($_POST["type"]) ? strtoupper($_POST["type"]) : "";
             $year = date('Y');
 
-            $res = removeCandidate($username, $year, $remove_cand_errors);
+            $res = false;
+            switch ($type) {
+                case 'DELETE':
+                    $res = removeCandidate($username, $year, $remove_cand_errors);
+                    break;
+                case "DISQUALIFICATION":
+                    $res = disqualifyCandidate($username, $year, $remove_cand_errors);
+                    break;
+                case "ADD_QUALIFICATION":
+                    $res = removeDisqualificationFromCandidate($username, $year, $remove_cand_errors);
+                    break;
+                default:
+            }
             if ($res) {
                 echo "<script> alert('Candidate removed!'); </script>";
             }
@@ -86,7 +99,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             if ($res) {
                 echo "<script> alert('Department remoced!'); </script>";
             }
-
+            break;
+        case "logout-form":
+            session_unset();
+            session_destroy();
+            header("Location: login.php");
+            exit();
             break;
         default:
     }
@@ -99,189 +117,193 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     <main>
         <?php include "./templates/header.php" ?>
 
-        <h3 class="header">Welcome,
-            <?php
-            echo ucwords(strtolower($name));
-            ?>
-        </h3>
-
-
-        <fieldset>
-            <legend>Admin Management</legend>
-            <p class="italic">Admin must be a registered user of the platform.</p>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
-                <input type="hidden" name="form-name" value="add-admin">
-                <h3>Add Admin</h3>
-                <div>
-                    <label>Enter username (or matric number) </label>
-                    <input type="text" required name="username" id="username" minlength="5" maxlength="10">
-                </div>
-                <?php
-                // Display error messages
-                if (!empty($add_admin_errors)) {
-                    echo "<div class='error'> ";
-                    foreach ($add_admin_errors as $error) {
-                        echo "<p>$error</p>";
-                    }
-                    echo "</div> ";
-                } ?>
-                <input class="w-fit" type="submit" value="Add Admin">
-            </form>
-
-            <br><br>
-            <hr><br><br>
-
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
-                <input type="hidden" name="form-name" value="remove-admin">
-                <h3>Remove Admin</h3>
-                <div>
-                    <label>Enter username (or matric number) </label>
-                    <input type="text" required name="username" id="username" minlength="9" maxlength="10">
-                </div>
-                <?php
-                // Display error messages
-                if (!empty($remove_admin_errors)) {
-                    echo "<div class='error'> ";
-                    foreach ($remove_admin_errors as $error) {
-                        echo "<p>$error</p>";
-                    }
-                    echo "</div> ";
-                } ?>
-
-                <input class="w-fit" type="submit" value="Remove Admin">
-            </form>
-        </fieldset>
-
-        <fieldset>
-            <legend>Candidate Management</legend>
-            <p class="italic">Candidate must be a registered user of the platform.</p>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
-                <input type="hidden" name="form-name" value="add-candidate">
-                <h3>Add Candidate</h3>
-                <div>
-                    <label>Enter username (or matric number) </label>
-                    <input type="text" required name="username" id="username" minlength="9" maxlength="10">
-                </div>
-
-                <div><label for="position">Position:</label>
-                    <select id="position" name="position" required>
-                        <option value="">Select position</option>
-                        <?php
-                        include './lib/dbconn.php';
-
-                        $sql = 'SELECT * from position';
-                        $result = $db->query($sql);
-
-                        if ($result->num_rows > 0) {
-                            while ($row = $result->fetch_assoc()) {
-
-                                echo "<option value='" . $row["TITLE"] . "'>" . $row["TITLE"] . "</option>";
-                            }
+        <section class="admin-grid">
+            <fieldset>
+                <legend>Admin Management</legend>
+                <p class="italic">Admin must be a registered user of the platform.</p>
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
+                    <input type="hidden" name="form-name" value="add-admin">
+                    <h3>Add Admin</h3>
+                    <div>
+                        <label>Enter username (or matric number) </label>
+                        <input type="text" required name="username" id="username" minlength="5" maxlength="10">
+                    </div>
+                    <?php
+                    // Display error messages
+                    if (!empty($add_admin_errors)) {
+                        echo "<div class='error'> ";
+                        foreach ($add_admin_errors as $error) {
+                            echo "<p>$error</p>";
                         }
+                        echo "</div> ";
+                    } ?>
+                    <input class="w-fit" type="submit" value="Add Admin">
+                </form>
 
-                        $db->close();
-                        ?>
-                    </select>
-                </div>
-                <?php
-                // Display error messages
-                if (!empty($add_cand_errors)) {
-                    echo "<div class='error'> ";
-                    foreach ($add_cand_errors as $error) {
-                        echo "<p>$error</p>";
-                    }
-                    echo "</div> ";
-                } ?>
+                <br>
+                <br>
 
-                <input class="w-fit" type="submit" value="Save Candidate">
-            </form>
-            <br><br>
-            <hr><br><br>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
-                <input type="hidden" name="form-name" value="remove-candidate">
-
-                <h3>Remove candidate</h3>
-                <div>
-                    <label>Enter username (or matric number) </label>
-                    <input type="text" required name="username" id="username" minlength="9" maxlength="10">
-                </div>
-                <?php
-                // Display error messages
-                if (!empty($remove_cand_errors)) {
-                    echo "<div class='error'> ";
-                    foreach ($remove_cand_errors as $error) {
-                        echo "<p>$error</p>";
-                    }
-                    echo "</div> ";
-                } ?>
-
-
-                <input class="w-fit" type="submit" value="Remove Candidate">
-            </form>
-        </fieldset>
-
-        <fieldset>
-            <legend>Department Management</legend>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
-
-                <input type="hidden" name="form-name" value="add-department">
-
-                <h3>Add Department</h3>
-                <div>
-                    <label>Enter department title</label>
-                    <input type="text" required name="department" id="department">
-                </div>
-                <?php
-                // Display error messages
-                if (!empty($add_dept_errors)) {
-                    echo "<div class='error'> ";
-                    foreach ($add_dept_errors as $error) {
-                        echo "<p>$error</p>";
-                    }
-                    echo "</div> ";
-                } ?>
-
-
-                <input class="w-fit" type="submit" value="Save Changes">
-            </form>
-            <br><br>
-            <hr><br><br>
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
-                <input type="hidden" name="form-name" value="remove-department">
-                <h3>Remove Department</h3>
-                <div><label for="department">Department:</label>
-                    <select id="department" name="department" required value="<?php echo isset($_SESSION['form_data']['department']) ? $_SESSION['form_data']['department'] : ''; ?>">
-                        <option value="">Select Department</option>
-                        <?php
-                        include './lib/dbconn.php';
-
-                        $sql = 'SELECT * from department';
-                        $result = $db->query($sql);
-
-                        if ($result->num_rows > 0) {
-                            while ($row = $result->fetch_assoc()) {
-                                print_r($row);
-                                echo "<option value='" . $row["NAME"] . "'>" . $row["NAME"] . "</option>";
-                            }
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
+                    <input type="hidden" name="form-name" value="remove-admin">
+                    <h3>Remove Admin</h3>
+                    <div>
+                        <label>Enter username (or matric number) </label>
+                        <input type="text" required name="username" id="username" minlength="9" maxlength="10">
+                    </div>
+                    <?php
+                    // Display error messages
+                    if (!empty($remove_admin_errors)) {
+                        echo "<div class='error'> ";
+                        foreach ($remove_admin_errors as $error) {
+                            echo "<p>$error</p>";
                         }
+                        echo "</div> ";
+                    } ?>
 
-                        $db->close();
-                        ?>
-                    </select>
-                </div>
-                <?php
-                // Display error messages
-                if (!empty($remove_dept_errors)) {
-                    echo "<div class='error'> ";
-                    foreach ($remove_dept_errors as $error) {
-                        echo "<p>$error</p>";
-                    }
-                    echo "</div> ";
-                } ?>
+                    <input class="w-fit" type="submit" value="Remove Admin">
+                </form>
+            </fieldset>
 
-                <input class="w-fit" type="submit" value="Save Changes">
-            </form>
-        </fieldset>
+            <fieldset>
+                <legend>Candidate Management</legend>
+                <p class="italic">Candidate must be a registered user of the platform.</p>
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
+                    <input type="hidden" name="form-name" value="add-candidate">
+                    <h3>Add Candidate</h3>
+                    <div>
+                        <label>Enter username (or matric number) </label>
+                        <input type="text" required name="username" id="username" minlength="9" maxlength="10">
+                    </div>
+                    <div><label for="position">Position:</label>
+                        <select id="position" name="position" required>
+                            <option value="">Select position</option>
+                            <?php
+                            include './lib/dbconn.php';
+
+                            $sql = 'SELECT * from position';
+                            $result = $db->query($sql);
+
+                            if ($result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+
+                                    echo "<option value='" . $row["TITLE"] . "'>" . $row["TITLE"] . "</option>";
+                                }
+                            }
+
+                            $db->close();
+                            ?>
+                        </select>
+                    </div>
+                    <?php
+                    // Display error messages
+                    if (!empty($add_cand_errors)) {
+                        echo "<div class='error'> ";
+                        foreach ($add_cand_errors as $error) {
+                            echo "<p>$error</p>";
+                        }
+                        echo "</div> ";
+                    } ?>
+
+                    <input class="w-fit" type="submit" value="Save Candidate">
+                </form>
+                <br>
+                <br>
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
+                    <input type="hidden" name="form-name" value="remove-candidate">
+
+                    <h3>Update candidacy</h3>
+                    <div>
+                        <label>Enter username (or matric number) </label>
+                        <input type="text" required name="username" id="username" minlength="9" maxlength="10">
+                    </div>
+                    <div>
+                        <label> Type </label>
+                        <select id="type" name="type" required>
+                            <option value="">- Select -</option>
+                            <option value="DELETE">Remove Candidacy</option>
+                            <option value="DISQUALIFICATION">Disqualify</option>
+                            <option value="ADD_QUALIFICATION">Remove Disqualification</option>
+
+                        </select>
+                    </div>
+                    <?php
+                    // Display error messages
+                    if (!empty($remove_cand_errors)) {
+                        echo "<div class='error'> ";
+                        foreach ($remove_cand_errors as $error) {
+                            echo "<p>$error</p>";
+                        }
+                        echo "</div> ";
+                    } ?>
+
+
+                    <input class="w-fit" type="submit" value="Remove Candidate">
+                </form>
+            </fieldset>
+
+            <fieldset>
+                <legend>Department Management</legend>
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
+
+                    <input type="hidden" name="form-name" value="add-department">
+
+                    <h3>Add Department</h3>
+                    <div>
+                        <label>Enter department title</label>
+                        <input type="text" required name="department" id="department">
+                    </div>
+                    <?php
+                    // Display error messages
+                    if (!empty($add_dept_errors)) {
+                        echo "<div class='error'> ";
+                        foreach ($add_dept_errors as $error) {
+                            echo "<p>$error</p>";
+                        }
+                        echo "</div> ";
+                    } ?>
+
+
+                    <input class="w-fit" type="submit" value="Save Changes">
+                </form>
+                <br>
+                <br>
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) ?>" method="post">
+                    <input type="hidden" name="form-name" value="remove-department">
+                    <h3>Remove Department</h3>
+                    <div><label for="department">Department:</label>
+                        <select id="department" name="department" required value="<?php echo isset($_SESSION['form_data']['department']) ? $_SESSION['form_data']['department'] : ''; ?>">
+                            <option value="">Select Department</option>
+                            <?php
+                            include './lib/dbconn.php';
+
+                            $sql = 'SELECT * from department';
+                            $result = $db->query($sql);
+
+                            if ($result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    print_r($row);
+                                    echo "<option value='" . $row["NAME"] . "'>" . $row["NAME"] . "</option>";
+                                }
+                            }
+
+                            $db->close();
+                            ?>
+                        </select>
+                    </div>
+                    <?php
+                    // Display error messages
+                    if (!empty($remove_dept_errors)) {
+                        echo "<div class='error'> ";
+                        foreach ($remove_dept_errors as $error) {
+                            echo "<p>$error</p>";
+                        }
+                        echo "</div> ";
+                    } ?>
+
+                    <input class="w-fit" type="submit" value="Save Changes">
+                </form>
+            </fieldset>
+        </section>
 
 
     </main>

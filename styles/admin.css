@@ -1,8 +1,19 @@
 form  div {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
 }
 
-.w-fit {
-    width: fit-content;
-}
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem;
+  }
+
+  fieldset {
+    padding: 1.5rem;
+  }
+
+.italic {
+    padding-bottom: 1rem;
+    font-size: 0.9rem;
+}  

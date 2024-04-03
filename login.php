@@ -47,8 +47,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         }
     }
-
     $_POST = array();
+
     // Store form data in session
     $_SESSION['form_data'] = array(
         'username' => $username,

@@ -8,20 +8,45 @@
 
 body{
   background-image: url(../images/main-bg.jpg);
+  font-size: 14px;
 }
 
 header {
-  background: rgb(223, 223, 223);
+  background: black;
   color: white;
   width: 100%;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  padding: 0.5rem 1rem;
+  padding: 1rem 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  max-width: 1200px;
+  margin: auto;
+}
+
+header a {
+  color: white;
+}
+
+header button {
+  background: white !important;
+  color: black !important;
+  display: flex;
+  align-items: center;
+  column-gap: 0.5rem;
+}
+
+header div {
+  display: flex;
+  align-items: center;
+  column-gap: 0.85rem;
+}
+
+header div span {
+  font-size: 1rem !important;
 }
 
 .logo {
@@ -33,24 +58,25 @@ header {
   gap:2px;
 }
 
+.w-fit {
+  width: fit-content;
+}
+
 main {
   position: relative;
   background: white;
   display: flex;
   flex-direction: column;
-  max-width: 720px;
+  max-width: 1200px;
   padding: 1rem;
   padding-top: 5rem;
   margin: auto;
-  margin-top: 30px;
-  margin-bottom: 30px;
   width: 100%;
   font-size: 1rem;
-  border: 1px solid gray;
-  border-radius: 12px;
   height: 100%;
   min-height: calc(100vh - 60px);
   overflow: hidden;
+  padding-bottom: 40px;
 }
 
 .italic {
@@ -77,6 +103,10 @@ form select {
   margin-top: 4px;
   padding: 0.75rem;
   border-radius: 8px;
+}
+
+input:focus, select:focus {
+  outline: none;
 }
 
 .error {
@@ -134,3 +164,4 @@ input[type="submit"]:disabled {
 .radio-container input {
   width: fit-content !important;
 }
+

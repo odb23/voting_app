@@ -28,7 +28,7 @@ $admin = isset($_SESSION['admin']) ? $_SESSION['admin'] : false;
                 $pos = $row['TITLE'];
                 echo "<fieldset><legend>" . ucwords(strtolower($pos)) . "</legend>";
 
-                $sql = $db->prepare("select c.username, lname, fname  from candidates c join users u on c.username = u.username where u.department_name = ? and c.year = ? and c.position_title = ?");
+                $sql = $db->prepare("select c.username, lname, fname, disqualified  from candidates c join users u on c.username = u.username where u.department_name = ? and c.year = ? and c.position_title = ?");
                 $sql->bind_param("sss", $user_department, $req_year, $pos);
                 $sql->execute();
                 $candidiate_results = $sql->get_result();
@@ -50,8 +50,9 @@ $admin = isset($_SESSION['admin']) ? $_SESSION['admin'] : false;
                             $total_count += $count;
                         }
 
-                        echo "<p>" . ucwords(strtolower($candidate['fname'] . " " . $candidate['lname'])) . ": " . $count . " votes </p>";
+                        echo "<p>" . ucwords(strtolower($candidate['fname'] . " " . $candidate['lname'])) . ": " . $count . " votes ". ((bool)$candidate['disqualified'] === true ? "(Disqualified)" : "") .  " </p> <br>";
                     }
+                
 
                     echo "<p>Total votes: $total_count</p>";
 
