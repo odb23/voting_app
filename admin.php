@@ -65,20 +65,24 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
             $year = date('Y');
 
             $res = false;
+            $message = "";
             switch ($type) {
                 case 'DELETE':
                     $res = removeCandidate($username, $year, $remove_cand_errors);
+                    $message = "Candidate removed!";
                     break;
                 case "DISQUALIFICATION":
                     $res = disqualifyCandidate($username, $year, $remove_cand_errors);
+                    $message = "Candidate disqualification successful!";
                     break;
                 case "ADD_QUALIFICATION":
                     $res = removeDisqualificationFromCandidate($username, $year, $remove_cand_errors);
+                    "Candidate disqualification removed!";
                     break;
                 default:
             }
             if ($res) {
-                echo "<script> alert('Candidate removed!'); </script>";
+                echo "<script> alert($message); </script>";
             }
 
             break;
